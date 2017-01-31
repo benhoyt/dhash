@@ -31,13 +31,13 @@ IS_PY3 = sys.version_info.major >= 3
 
 def get_grays(image, width, height):
     """Convert image to grayscale, downsize to width*height, and return list
-    of grayscale pixel values (0 to 255).
+    of grayscale integer pixel values (for example, 0 to 255).
 
     >>> get_grays([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], 5, 5)
     [0, 0, 1, 1, 1, 0, 1, 1, 3, 4, 0, 1, 6, 6, 7, 7, 7, 7, 7, 9, 8, 7, 7, 8, 9]
 
     >>> import os
-    >>> test_filename = os.path.join(os.path.dirname(__file__), 'test', 'test-30x20.jpg')
+    >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
     >>> with wand.image.Image(filename=test_filename) as image:
     ...     get_grays(image, 9, 9)[:18]
     [95, 157, 211, 123, 94, 79, 75, 75, 78, 96, 116, 122, 113, 93, 75, 82, 81, 79]
@@ -49,7 +49,7 @@ def get_grays(image, width, height):
         return image
 
     if wand is None and PIL is None:
-        raise ImportError('must have wand or PIL/Pillow installed to use dhash on images')
+        raise ImportError('must have wand or Pillow/PIL installed to use dhash on images')
 
     if wand is not None and isinstance(image, wand.image.Image):
         with image.clone() as small_image:
@@ -82,7 +82,7 @@ def dhash_row_col(image, size=8):
     '0101001111111001'
 
     >>> import os
-    >>> test_filename = os.path.join(os.path.dirname(__file__), 'test', 'test-30x20.jpg')
+    >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
     >>> with wand.image.Image(filename=test_filename) as image:
     ...     row, col = dhash_row_col(image)
     >>> (row, col) == (13962536140006260880, 9510476289765573406)
@@ -204,6 +204,14 @@ def format_grays(grays, size=8):
     return '\n'.join(lines)
 
 
+def force_pil():
+    """If both wand and Pillow/PIL are installed, force the use of Pillow/PIL."""
+    global wand
+    if PIL is None:
+        raise ValueError('Pillow/PIL library must be installed to use force_pil()')
+    wand = None
+
+
 if __name__ == '__main__':
     import argparse
 
@@ -212,9 +220,18 @@ if __name__ == '__main__':
                         help='width and height of dhash image size, default %(default)d')
     parser.add_argument('-f', '--format', default='hex', choices=['hex', 'decimal', 'matrix', 'grays'],
                         help='hash output format, default %(default)s')
+    parser.add_argument('-p', '--pil', action='store_true',
+                        help='if both wand and Pillow/PIL installed, force use of Pillow/PIL')
     parser.add_argument('filename', nargs='*',
                         help='name of image file to hash (or two to calculate the delta)')
     args = parser.parse_args()
+
+    if args.pil:
+        try:
+            force_pil()
+        except ValueError:
+            sys.stderr.write('You must have Pillow/PIL installed to use --pil\n')
+            sys.exit(1)
 
     def load_image(filename):
         if wand is not None:
@@ -222,10 +239,11 @@ if __name__ == '__main__':
         elif PIL is not None:
             return PIL.Image.open(filename)
         else:
-            sys.stderr.write('You must have wand or PIL/Pillow installed to use the dhash command\n')
+            sys.stderr.write('You must have wand or Pillow/PIL installed to use the dhash command\n')
             sys.exit(1)
 
     if len(args.filename) == 0:
+        # NOTE: doctests require "wand" to be installed
         import doctest
         doctest.testmod()
 
@@ -252,8 +270,10 @@ if __name__ == '__main__':
         hash1 = dhash_int(image1, size=args.size)
         hash2 = dhash_int(image2, size=args.size)
         num_bits_different = get_num_bits_different(hash1, hash2)
-        print('{} bits differ out of {} ({:.1f}%)'.format(
-                num_bits_different, args.size * args.size * 2,
+        print('{} {} out of {} ({:.1f}%)'.format(
+                num_bits_different,
+                'bit differs' if num_bits_different == 1 else 'bits differ',
+                args.size * args.size * 2,
                 100 * num_bits_different / (args.size * args.size * 2)))
 
     else:

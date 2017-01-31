@@ -1,0 +1,4 @@
+include *.py
+include *.jpg
+include README.rst
+include LICENSE.txt
