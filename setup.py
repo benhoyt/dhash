@@ -28,7 +28,7 @@ setup(
     author_email='benhoyt@gmail.com',
     url='https://github.com/Jetsetter/dhash',
     license='MIT License',
-    description='Calculate difference hash (percentual hash) for a given image, useful for detecting duplicates',
+    description='Calculate difference hash (perceptual hash) for a given image, useful for detecting duplicates',
     long_description=long_description,
     py_modules=['dhash'],
     classifiers=[

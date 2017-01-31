@@ -1,4 +1,4 @@
-"""Calculate difference hash (percentual hash) for a given image, useful for detecting duplicates.
+"""Calculate difference hash (perceptual hash) for a given image, useful for detecting duplicates.
 
 For example usage, see README.rst.
 

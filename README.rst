@@ -42,7 +42,7 @@ produce slightly different dhash values due to differences in their grayscale
 conversion and resizing algorithms.
 
 If you have both libraries installed, dhash will use wand by default. To
-override this and force use of Pillow/PIL, call ``dhash.use_pil()`` before
+override this and force use of Pillow/PIL, call ``dhash.force_pil()`` before
 using the library.
 
 To produce a dhash value using wand:
@@ -68,7 +68,7 @@ To produce a dhash value using Pillow:
     print(dhash.format_hex(row, col))
 
 If you have your own library to convert an image to grayscale and downsize it
-to 9x9 (or 17x17 for size=16), you can pass `dhash_row_col()` a list of
+to 9x9 (or 17x17 for size=16), you can pass ``dhash_row_col()`` a list of
 integer pixel intensities (for example, from 0 to 255). For example:
 
 .. code:: python
