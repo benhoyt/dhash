@@ -155,7 +155,7 @@ def format_hex(row_hash, col_hash, size=8):
     >>> format_hex(19409, 14959, size=4)
     '4bd13a6f'
     """
-    hex_length = size * size // 8
+    hex_length = size * size // 4
     return '{0:0{2}x}{1:0{2}x}'.format(row_hash, col_hash, hex_length)
 
 
