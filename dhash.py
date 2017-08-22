@@ -24,7 +24,7 @@ except ImportError:
     PIL = None
 
 
-__version__ = '1.1'
+__version__ = '1.2'
 
 IS_PY3 = sys.version_info.major >= 3
 
