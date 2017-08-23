@@ -24,7 +24,7 @@ except ImportError:
     PIL = None
 
 
-__version__ = '1.2'
+__version__ = '1.3'
 
 IS_PY3 = sys.version_info.major >= 3
 
@@ -139,6 +139,12 @@ def format_bytes(row_hash, col_hash, size=8):
     True
     >>> [hex(b) for b in hash_bytes] if IS_PY3 else [hex(ord(b)) for b in hash_bytes]
     ['0x4b', '0xd1', '0x3a', '0x6f']
+
+    >>> hash_bytes = format_bytes(1, 2, size=4)
+    >>> type(hash_bytes) is bytes
+    True
+    >>> [hex(b) for b in hash_bytes] if IS_PY3 else [hex(ord(b)) for b in hash_bytes]
+    ['0x0', '0x1', '0x0', '0x2']
     """
     bits_per_hash = size * size
     full_hash = row_hash << bits_per_hash | col_hash
@@ -149,13 +155,15 @@ def format_bytes(row_hash, col_hash, size=8):
 
 
 def format_hex(row_hash, col_hash, size=8):
-    """Format dhash integers as hex string of size*size//4 total hex digits
+    """Format dhash integers as hex string of size*size//2 total hex digits
     (row_hash and col_hash concatenated).
 
     >>> format_hex(19409, 14959, size=4)
     '4bd13a6f'
+    >>> format_hex(1, 2, size=4)
+    '00010002'
     """
-    hex_length = size * size // 8
+    hex_length = size * size // 4
     return '{0:0{2}x}{1:0{2}x}'.format(row_hash, col_hash, hex_length)
 
 
