@@ -29,7 +29,16 @@ __version__ = '1.3'
 IS_PY3 = sys.version_info.major >= 3
 
 
-def get_grays(image, width, height):
+def fill_transparent(image, fill_color='white'):
+    "Return image with transparent areas blended to @fill_color."
+    if image.mode in ('RGBA', 'LA'):
+        cleaned = PIL.Image.new(image.mode[:-1], image.size, fill_color)
+        cleaned.paste(image, image.split()[-1])
+        return cleaned
+    return image
+
+
+def get_grays(image, width, height, fill_color='white'):
     """Convert image to grayscale, downsize to width*height, and return list
     of grayscale integer pixel values (for example, 0 to 255).
 
@@ -62,6 +71,8 @@ def get_grays(image, width, height):
                 return [ord(c) for c in blob[::3]]
 
     elif PIL is not None and isinstance(image, PIL.Image.Image):
+        if fill_color is not None:
+            image = fill_transparent(image)
         gray_image = image.convert('L')
         small_image = gray_image.resize((width, height), PIL.Image.ANTIALIAS)
         return list(small_image.getdata())
