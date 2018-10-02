@@ -55,14 +55,13 @@ def get_grays_wand(image, width, height, fill_color='white'):
         image.background_color = wand.color.Color(fill_color)
         image.alpha_channel = 'background'
 
-    image.type = 'grayscale'
     image.resize(width, height)
 
-    blob = image.make_blob(format='RGB')
+    blob = image.make_blob(format='GRAY')
     if IS_PY3:
-        return list(blob[::3])
+        return list(blob)
 
-    return [ord(c) for c in blob[::3]]
+    return [ord(c) for c in blob]
 
 
 def get_grays(image, width, height, fill_color='white'):
