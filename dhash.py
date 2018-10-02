@@ -30,11 +30,6 @@ __version__ = '1.3'
 IS_PY3 = sys.version_info.major >= 3
 
 
-def fill_transparent(image, fill_color='white'):
-    "Return image with transparent areas blended to @fill_color."
-    return image
-
-
 def get_grays_pil(image, width, height, fill_color='white'):
     if image.mode in ('RGBA', 'LA') and fill_color is not None:
         cleaned = PIL.Image.new(image.mode[:-1], image.size, fill_color)
