@@ -1,6 +1,12 @@
 dhash
 =====
 
+.. image:: https://travis-ci.com/kibaffo33/dhash.svg?branch=master
+    :target: https://travis-ci.com/kibaffo33/dhash
+
+.. image:: https://coveralls.io/repos/github/kibaffo33/dhash/badge.svg?branch=master
+    :target: https://coveralls.io/github/kibaffo33/dhash?branch=master
+
 dhash is a Python library that generates a "difference hash" for a given image
 -- a `perceptual hash`_ based on Neal Krawetz's dHash algorithm in `this
 "Hacker Factor" blog entry`_.
