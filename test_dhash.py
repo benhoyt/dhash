@@ -18,14 +18,11 @@ def pil_image():
 # def wand_image():
 #    ...
 
-
 @pytest.fixture
-def default_config(pil_image):
-    """Process the test image with the default behaviour and provide the result"""
-    img, size = pil_image, 8
-    row_hash, col_hash = dhash.dhash_row_col(img, size=size)
-    hex_format = dhash.format_hex(row_hash, col_hash, size=size)
-    return hex_format
+def known_hash():
+    """The known hex format size 8 of dhash-test.jpg"""
+    dhash = "c1c4e4a484a0809083fbffcc0040831e"
+    return dhash
 
 
 @pytest.mark.parametrize("size", size_sample)
@@ -201,7 +198,23 @@ def test_force_pil():
     assert dhash.wand is None
 
 
-def test_cli(pil_image, default_config):
+def test_dhash(known_hash):
+    """dhash(...) should perform the default configuartion of dhash"""
+    # GIVEN a sample image
+    # WHEN performing the default dhash
+    result = dhash.dhash("dhash-test.jpg")
+
+    # THEN return a hex str of the known hash
+    assert isinstance(result, str), "dhash(...) should return a str"
+
+    hex_characters = "0123456789abcdef"
+    chars_are_hex_chars = list(map(lambda x: x in hex_characters, result))
+    assert all(chars_are_hex_chars), "all character should be between 0-9 and a-f"
+
+    assert result == known_hash, "The result should match the known hash"
+
+
+def test_cli(pil_image, known_hash):
     """dhash cli should produce hex format hash from size 8"""
 
     # GIVEN command line input for
@@ -212,4 +225,4 @@ def test_cli(pil_image, default_config):
     result = check_output(cmd, shell=True).decode().rstrip()
 
     # THEN dash, default at size 8 and return hex_format
-    assert result == default_config, "stdout should match expected output"
+    assert result == known_hash, "stdout should match expected output"

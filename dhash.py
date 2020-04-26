@@ -215,6 +215,15 @@ def format_grays(grays, size=8):
     return '\n'.join(lines)
 
 
+def dhash(filename):
+    """Perform a dhash with the default configuarion"""
+    assert PIL is not None, "Function depends upon PIL"
+    img, size = PIL.Image.open(filename), 8
+    row_hash, col_hash = dhash_row_col(img, size=size)
+    hex_format = format_hex(row_hash, col_hash, size=size)
+    return hex_format
+
+
 def force_pil():
     """If both wand and Pillow/PIL are installed, force the use of Pillow/PIL."""
     global wand
