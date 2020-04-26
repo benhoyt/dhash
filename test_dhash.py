@@ -8,8 +8,13 @@ size_sample = list(range(4, 17))
 
 
 @pytest.fixture
-def pil_image():
-    img = Image.open("dhash-test.jpg")
+def test_filename():
+    return "dhash-test.jpg"
+
+
+@pytest.fixture
+def pil_image(test_filename):
+    img = Image.open(test_filename)
     return img
 
 
@@ -17,6 +22,7 @@ def pil_image():
 # @pytest.fixture
 # def wand_image():
 #    ...
+
 
 @pytest.fixture
 def known_hash():
@@ -198,11 +204,11 @@ def test_force_pil():
     assert dhash.wand is None
 
 
-def test_dhash(known_hash):
+def test_dhash(test_filename, known_hash):
     """dhash(...) should perform the default configuartion of dhash"""
     # GIVEN a sample image
     # WHEN performing the default dhash
-    result = dhash.dhash("dhash-test.jpg")
+    result = dhash.dhash(test_filename)
 
     # THEN return a hex str of the known hash
     assert isinstance(result, str), "dhash(...) should return a str"
@@ -214,12 +220,34 @@ def test_dhash(known_hash):
     assert result == known_hash, "The result should match the known hash"
 
 
-def test_cli(pil_image, known_hash):
+def test_dhash_diff(test_filename):
+    """dhash(...) should provide an int of difference between two images"""
+
+    # GIVEN the same image
+    filename = test_filename
+
+    # WHEN performing dhash_diff(...)
+    result = dhash.dhash_diff(filename, filename)
+
+    # THEN return a diff of zero
+    assert isinstance(result, int), "dhash_diff(...) should return an int"
+    assert result == 0, "The result should be zero"
+
+    # GIVEN two different images
+    filename180 = "dhash-test-180.jpg"
+
+    # WHEN performing dhash_diff()
+    result = dhash.dhash_diff(filename, filename180)
+    assert isinstance(result, int), "dhash_diff(...) should return an int"
+    assert result > 10, "The result should be zero"
+
+
+def test_cli(pil_image, test_filename, known_hash):
     """dhash cli should produce hex format hash from size 8"""
 
     # GIVEN command line input for
     # dhash on the test image, no size or format specified
-    cmd = "python -m dhash dhash-test.jpg"
+    cmd = f"python -m dhash {test_filename}"
 
     # WHEN executing on command line
     result = check_output(cmd, shell=True).decode().rstrip()

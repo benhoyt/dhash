@@ -223,6 +223,17 @@ def dhash(filename):
     hex_format = format_hex(row_hash, col_hash, size=size)
     return hex_format
 
+def dhash_diff(filename1, filename2):
+
+    hashes = []
+    for filename in [filename1, filename2]:
+        img, size = PIL.Image.open(filename), 8
+        result = dhash_int(img, size=size)
+        hashes.append(result)
+
+    diff = get_num_bits_different(hashes[0], hashes[1])
+
+    return diff
 
 def force_pil():
     """If both wand and Pillow/PIL are installed, force the use of Pillow/PIL."""
