@@ -5,7 +5,7 @@ For example usage, see README.rst.
 This code is licensed under a permissive MIT license -- see LICENSE.txt.
 
 The dhash project lives on GitHub here:
-https://github.com/Jetsetter/dhash
+https://github.com/benhoyt/dhash
 """
 
 from __future__ import division

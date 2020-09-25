@@ -34,7 +34,7 @@ setup(
     version=version,
     author='Ben Hoyt',
     author_email='benhoyt@gmail.com',
-    url='https://github.com/Jetsetter/dhash',
+    url='https://github.com/benhoyt/dhash',
     license='MIT License',
     description='Calculate difference hash (perceptual hash) for a given image, useful for detecting duplicates',
     long_description=long_description,

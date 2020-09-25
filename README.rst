@@ -27,8 +27,8 @@ easily by passing ``size=N`` as a keyword argument to most functions. For
 example, you can produce a more accurate (but slower to work with) dhash of
 512 bits by specifying ``size=16``.
 
-I've found that the dhash is great for detecting near duplicates (at
-`Jetsetter`_ we find dupes using a size 8 dhash with a maximum delta of 2
+I've found that dhash is great for detecting near duplicates (we
+found dupes using a size 8 dhash with a maximum delta of 2
 bits). But because of the simplicity of the algorithm, it's not great at
 finding similar images or duplicate-but-cropped images -- you'd need a more
 sophisticated image fingerprint if you want that. However, the dhash is good
@@ -139,7 +139,7 @@ from the command line:
 
 Read the code in `dhash.py`_ for more details – it's pretty small!
 
-dhash was written by `Ben Hoyt`_ for `Jetsetter`_ and is licensed with a
+dhash was written by `Ben Hoyt`_ and is licensed with a
 permissive MIT license (see `LICENSE.txt`_).
 
 
@@ -148,7 +148,6 @@ permissive MIT license (see `LICENSE.txt`_).
 .. _this "Hacker Factor" blog entry: http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html
 .. _wand: https://pypi.python.org/pypi/Wand
 .. _Pillow (PIL): https://pypi.python.org/pypi/Pillow
-.. _dhash.py: https://github.com/Jetsetter/dhash/blob/master/dhash.py
+.. _dhash.py: https://github.com/benhoyt/dhash/blob/master/dhash.py
 .. _Ben Hoyt: http://benhoyt.com/
-.. _Jetsetter: http://www.jetsetter.com/
-.. _LICENSE.txt: https://github.com/Jetsetter/dhash/blob/master/LICENSE.txt
+.. _LICENSE.txt: https://github.com/benhoyt/dhash/blob/master/LICENSE.txt
