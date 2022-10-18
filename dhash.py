@@ -256,8 +256,8 @@ if __name__ == '__main__':
     if len(args.filename) == 0:
         # NOTE: doctests require "wand" to be installed
         import doctest
-        test_results = doctest.testmod()
-        if test_results.failed:
+        failure_count, _ = doctest.testmod()
+        if failure_count:
             sys.exit(1)
 
     elif len(args.filename) == 1:
