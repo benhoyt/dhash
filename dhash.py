@@ -256,7 +256,9 @@ if __name__ == '__main__':
     if len(args.filename) == 0:
         # NOTE: doctests require "wand" to be installed
         import doctest
-        doctest.testmod()
+        test_results = doctest.testmod()
+        if test_results.failed:
+            sys.exit(1)
 
     elif len(args.filename) == 1:
         image = load_image(args.filename[0])
