@@ -63,7 +63,7 @@ def get_grays(image, width, height):
 
     elif PIL is not None and isinstance(image, PIL.Image.Image):
         gray_image = image.convert('L')
-        small_image = gray_image.resize((width, height), PIL.Image.ANTIALIAS)
+        small_image = gray_image.resize((width, height), PIL.Image.Resampling.LANCZOS)
         return list(small_image.getdata())
 
     else:
