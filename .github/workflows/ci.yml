@@ -21,6 +21,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install requirements
         run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+               apt install libmagickwand-dev
+          fi
           pip install --upgrade pip
           pip install Pillow Wand
       - name: Run tests
