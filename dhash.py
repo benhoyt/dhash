@@ -48,15 +48,15 @@ def get_grays_pil(image, width, height, fill_color='white'):
 
 def get_grays_wand(image, width, height, fill_color='white'):
     # we don't want to mutate the caller's image
-    image = image.clone()
+    with image.clone() as clone:
+        if clone.alpha_channel and fill_color is not None:
+            clone.background_color = wand.color.Color(fill_color)
+            clone.alpha_channel = 'background'
 
-    if image.alpha_channel and fill_color is not None:
-        image.background_color = wand.color.Color(fill_color)
-        image.alpha_channel = 'background'
+        clone.resize(width, height)
 
-    image.resize(width, height)
+        blob = clone.make_blob(format='GRAY')
 
-    blob = image.make_blob(format='GRAY')
     if IS_PY3:
         return list(blob)
 
