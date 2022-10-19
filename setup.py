@@ -3,7 +3,7 @@
 import os
 import re
 import sys
-from distutils.core import setup
+from setuptools import setup
 
 
 # Read files as byte strings on Python 2.x, unicode strings on 3.x
@@ -39,6 +39,7 @@ setup(
     description='Calculate difference hash (perceptual hash) for a given image, useful for detecting duplicates',
     long_description=long_description,
     py_modules=['dhash'],
+    tests_require=['wand', 'Pillow'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
