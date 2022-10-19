@@ -69,13 +69,6 @@ def get_grays(image, width, height, fill_color='white'):
 
     >>> get_grays([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], 5, 5)
     [0, 0, 1, 1, 1, 0, 1, 1, 3, 4, 0, 1, 6, 6, 7, 7, 7, 7, 7, 9, 8, 7, 7, 8, 9]
-
-    >>> from PIL import Image
-    >>> image = Image.open('dhash-test.jpg')
-    >>> result = get_grays(image, 9, 9)[:18]  # first two rows
-    >>> expected = [93, 158, 210, 122, 93, 77, 74, 74, 77, 95, 117, 122, 111, 92, 74, 81, 80, 77]
-    >>> all(abs(r-e) <= 1 for r, e in zip(result, expected))
-    True
     """
     if isinstance(image, (tuple, list)):
         if len(image) == width * height:
@@ -117,12 +110,6 @@ def dhash_row_col(image, size=8):
     """Calculate row and column difference hash for given image and return
     hashes as (row_hash, col_hash) where each value is a size*size bit
     integer.
-
-    >>> row, col = dhash_row_col([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], size=4)
-    >>> format(row, '016b')
-    '0100101111010001'
-    >>> format(col, '016b')
-    '0101001111111001'
     """
     width = size + 1
     grays = get_grays(image, width, width)
