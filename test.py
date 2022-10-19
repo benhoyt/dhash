@@ -33,3 +33,8 @@ class TestDHash(TestCase):
         self.assertEqual(
             dhash_row_col(pilToWand(im1)),
             dhash_row_col(pilToWand(im2)))
+
+
+if __name__ == '__main__':
+    import unittest
+    unittest.main()
