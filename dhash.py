@@ -70,9 +70,8 @@ def get_grays(image, width, height, fill_color='white'):
     >>> get_grays([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], 5, 5)
     [0, 0, 1, 1, 1, 0, 1, 1, 3, 4, 0, 1, 6, 6, 7, 7, 7, 7, 7, 9, 8, 7, 7, 8, 9]
 
-    >>> import os
-    >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
-    >>> image = PIL.Image.open(test_filename)
+    >>> from PIL import Image
+    >>> image = Image.open('dhash-test.jpg')
     >>> result = get_grays(image, 9, 9)[:18]  # first two rows
     >>> expected = [93, 158, 210, 122, 93, 77, 74, 74, 77, 95, 117, 122, 111, 92, 74, 81, 80, 77]
     >>> all(abs(r-e) <= 1 for r, e in zip(result, expected))
