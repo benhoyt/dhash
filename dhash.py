@@ -5,7 +5,7 @@ For example usage, see README.rst.
 This code is licensed under a permissive MIT license -- see LICENSE.txt.
 
 The dhash project lives on GitHub here:
-https://github.com/Jetsetter/dhash
+https://github.com/benhoyt/dhash
 """
 
 from __future__ import division
@@ -21,6 +21,10 @@ except ImportError:
 
 try:
     import PIL.Image
+    try:
+        _resample = PIL.Image.Resampling.LANCZOS
+    except AttributeError:
+        _resample = PIL.Image.ANTIALIAS
 except ImportError:
     PIL = None
 
@@ -68,9 +72,11 @@ def get_grays(image, width, height, fill_color='white'):
 
     >>> import os
     >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
-    >>> with wand.image.Image(filename=test_filename) as image:
-    ...     get_grays(image, 9, 9)[:18]
-    [95, 157, 211, 123, 94, 79, 75, 75, 78, 96, 116, 122, 113, 93, 75, 82, 81, 79]
+    >>> image = PIL.Image.open(test_filename)
+    >>> result = get_grays(image, 9, 9)[:18]  # first two rows
+    >>> expected = [93, 158, 210, 122, 93, 77, 74, 74, 77, 95, 117, 122, 111, 92, 74, 81, 80, 77]
+    >>> all(abs(r-e) <= 1 for r, e in zip(result, expected))
+    True
     """
     if isinstance(image, (tuple, list)):
         if len(image) == width * height:
@@ -89,7 +95,23 @@ def get_grays(image, width, height, fill_color='white'):
     if wand is None and PIL is None:
         raise ImportError('must have wand or Pillow/PIL installed to use dhash on images')
 
-    raise ValueError('image must be a wand.image.Image or PIL.Image instance')
+    if wand is not None and isinstance(image, wand.image.Image):
+        with image.clone() as small_image:
+            small_image.type = 'grayscale'
+            small_image.resize(width, height)
+            blob = small_image.make_blob(format='RGB')
+            if IS_PY3:
+                return list(blob[::3])
+            else:
+                return [ord(c) for c in blob[::3]]
+
+    elif PIL is not None and isinstance(image, PIL.Image.Image):
+        gray_image = image.convert('L')
+        small_image = gray_image.resize((width, height), _resample)
+        return list(small_image.getdata())
+
+    else:
+        raise ValueError('image must be a wand.image.Image or PIL.Image instance')
 
 
 def dhash_row_col(image, size=8):
@@ -102,13 +124,6 @@ def dhash_row_col(image, size=8):
     '0100101111010001'
     >>> format(col, '016b')
     '0101001111111001'
-
-    >>> import os
-    >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
-    >>> with wand.image.Image(filename=test_filename) as image:
-    ...     row, col = dhash_row_col(image)
-    >>> (row, col) == (13962536140006260880, 9510476289765573406)
-    True
     """
     width = size + 1
     grays = get_grays(image, width, width)
@@ -278,7 +293,9 @@ if __name__ == '__main__':
     if len(args.filename) == 0:
         # NOTE: doctests require "wand" to be installed
         import doctest
-        doctest.testmod()
+        failure_count, _ = doctest.testmod()
+        if failure_count:
+            sys.exit(1)
 
     elif len(args.filename) == 1:
         image = load_image(args.filename[0])
