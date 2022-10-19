@@ -20,6 +20,10 @@ except ImportError:
 
 try:
     import PIL.Image
+    try:
+        _resample = PIL.Image.Resampling.LANCZOS
+    except AttributeError:
+        _resample = PIL.Image.ANTIALIAS
 except ImportError:
     PIL = None
 
@@ -38,9 +42,9 @@ def get_grays(image, width, height):
 
     >>> import os
     >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
-    >>> with wand.image.Image(filename=test_filename) as image:
-    ...     get_grays(image, 9, 9)[:18]
-    [95, 157, 211, 123, 94, 79, 75, 75, 78, 96, 116, 122, 113, 93, 75, 82, 81, 79]
+    >>> image = PIL.Image.open(test_filename)
+    >>> get_grays(image, 9, 9)[:18]  # first two rows
+    [93, 158, 210, 122, 93, 77, 74, 74, 77, 95, 117, 122, 111, 92, 74, 81, 80, 77]
     """
     if isinstance(image, (tuple, list)):
         if len(image) != width * height:
@@ -63,7 +67,7 @@ def get_grays(image, width, height):
 
     elif PIL is not None and isinstance(image, PIL.Image.Image):
         gray_image = image.convert('L')
-        small_image = gray_image.resize((width, height), PIL.Image.Resampling.LANCZOS)
+        small_image = gray_image.resize((width, height), _resample)
         return list(small_image.getdata())
 
     else:
@@ -83,9 +87,9 @@ def dhash_row_col(image, size=8):
 
     >>> import os
     >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
-    >>> with wand.image.Image(filename=test_filename) as image:
-    ...     row, col = dhash_row_col(image)
-    >>> (row, col) == (13962536140006260880, 9510476289765573406)
+    >>> image = PIL.Image.open(test_filename)
+    >>> row, col = dhash_row_col(image)
+    >>> (row, col) == (13962536140006260880, 9510476289765573406)  # to avoid comparing 'L' suffix on Python 2.7
     True
     """
     width = size + 1
