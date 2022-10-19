@@ -1,5 +1,5 @@
-__pycache__
+__pycache__/
 *.pyc
 MANIFEST
-dist
-build
+dist/
+build/
