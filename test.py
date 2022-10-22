@@ -31,19 +31,6 @@ class TestDHash(TestCase):
 
         self.assertEqual(result, expected)
 
-    def test_dhash_row_col(self):
-        image = [
-            0, 0, 1, 1, 1,
-            0, 1, 1, 3, 4,
-            0, 1, 6, 6, 7,
-            7, 7, 7, 7, 9,
-            8, 7, 7, 8, 9,
-        ]  # fmt: skip
-
-        row, col = dhash.dhash_row_col(image, size=4)
-        self.assertEqual(row, 0b0100101111010001)
-        self.assertEqual(col, 0b0101001111111001)
-
     def test_fill_transparency(self):
         "Ensure transparent colors in PIL Images are ignored in hashes"
 

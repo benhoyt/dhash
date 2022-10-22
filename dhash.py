@@ -110,6 +110,13 @@ def dhash_row_col(image, size=8):
     """Calculate row and column difference hash for given image and return
     hashes as (row_hash, col_hash) where each value is a size*size bit
     integer.
+
+    >>> image = [ 0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7, 9,8,7,7,8,9 ]
+    >>> row, col = dhash_row_col(image, 4)
+    >>> format(row, '016b')
+    '0100101111010001'
+    >>> format(col, '016b')
+    '0101001111111001'
     """
     width = size + 1
     grays = get_grays(image, width, width)
