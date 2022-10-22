@@ -29,7 +29,7 @@ class TestDHash(TestCase):
             95, 117, 122, 111, 92, 74, 81, 80, 77,
         ]  # fmt: skip
 
-        self.assertEqual(result, expected)
+        self.assertAlmostEqual(result, expected, delta=1)
 
     def test_fill_transparency(self):
         "Ensure transparent colors in PIL Images are ignored in hashes"
