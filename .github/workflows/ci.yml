@@ -26,4 +26,5 @@ jobs:
           pip install pytest pytest-cov Pillow Wand
       - name: Run tests
         run: |
+          python -m doctest dhash.py
           pytest --cov=dhash test.py
