@@ -34,7 +34,7 @@ __version__ = '1.3'
 IS_PY3 = sys.version_info.major >= 3
 
 
-def get_grays_pil(image, width, height, fill_color='white'):
+def _get_grays_pil(image, width, height, fill_color='white'):
     if image.mode in ('RGBA', 'LA') and fill_color is not None:
         cleaned = PIL.Image.new(image.mode[:-1], image.size, fill_color)
         cleaned.paste(image, image.split()[-1])
@@ -46,7 +46,7 @@ def get_grays_pil(image, width, height, fill_color='white'):
     return list(image.getdata())
 
 
-def get_grays_wand(image, width, height, fill_color='white'):
+def _get_grays_wand(image, width, height, fill_color='white'):
     # we don't want to mutate the caller's image
     with image.clone() as clone:
         if clone.alpha_channel and fill_color is not None:
@@ -79,10 +79,10 @@ def get_grays(image, width, height, fill_color='white'):
                 len(image), width * height))
 
     if wand is not None and isinstance(image, wand.image.Image):
-        return get_grays_wand(image, width, height, fill_color)
+        return _get_grays_wand(image, width, height, fill_color)
 
     if PIL is not None and isinstance(image, PIL.Image.Image):
-        return get_grays_pil(image, width, height, fill_color)
+        return _get_grays_pil(image, width, height, fill_color)
 
     if wand is None and PIL is None:
         raise ImportError('must have wand or Pillow/PIL installed to use dhash on images')
