@@ -15,6 +15,7 @@ import sys
 # Allow library to be imported even if neither wand or PIL are installed
 try:
     import wand.image
+    import wand.color
 except ImportError:
     wand = None
 
@@ -33,24 +34,46 @@ __version__ = '1.3'
 IS_PY3 = sys.version_info.major >= 3
 
 
-def get_grays(image, width, height):
+def _get_grays_pil(image, width, height, fill_color='white'):
+    if image.mode in ('RGBA', 'LA') and fill_color is not None:
+        cleaned = PIL.Image.new(image.mode[:-1], image.size, fill_color)
+        cleaned.paste(image, image.split()[-1])
+        image = cleaned
+
+    image = image.convert('L')
+    image = image.resize((width, height), _resample)
+
+    return list(image.getdata())
+
+
+def _get_grays_wand(image, width, height, fill_color='white'):
+    # we don't want to mutate the caller's image
+    with image.clone() as clone:
+        if clone.alpha_channel and fill_color is not None:
+            clone.background_color = wand.color.Color(fill_color)
+            clone.alpha_channel = 'background'
+
+        clone.resize(width, height)
+
+        blob = clone.make_blob(format='GRAY')
+
+    if IS_PY3:
+        return list(blob)
+
+    return [ord(c) for c in blob]
+
+
+def get_grays(image, width, height, fill_color='white'):
     """Convert image to grayscale, downsize to width*height, and return list
     of grayscale integer pixel values (for example, 0 to 255).
 
     >>> get_grays([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], 5, 5)
     [0, 0, 1, 1, 1, 0, 1, 1, 3, 4, 0, 1, 6, 6, 7, 7, 7, 7, 7, 9, 8, 7, 7, 8, 9]
-
-    >>> import os
-    >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
-    >>> image = PIL.Image.open(test_filename)
-    >>> result = get_grays(image, 9, 9)[:18]  # first two rows
-    >>> expected = [93, 158, 210, 122, 93, 77, 74, 74, 77, 95, 117, 122, 111, 92, 74, 81, 80, 77]
-    >>> all(abs(r-e) <= 1 for r, e in zip(result, expected))
-    True
     """
     if isinstance(image, (tuple, list)):
         if len(image) != width * height:
-            raise ValueError('image sequence length ({}) not equal to width*height ({})'.format(
+            raise ValueError(
+                'image sequence length ({}) not equal to width*height ({})'.format(
                     len(image), width * height))
         return image
 
@@ -58,20 +81,9 @@ def get_grays(image, width, height):
         raise ImportError('must have wand or Pillow/PIL installed to use dhash on images')
 
     if wand is not None and isinstance(image, wand.image.Image):
-        with image.clone() as small_image:
-            small_image.type = 'grayscale'
-            small_image.resize(width, height)
-            blob = small_image.make_blob(format='RGB')
-            if IS_PY3:
-                return list(blob[::3])
-            else:
-                return [ord(c) for c in blob[::3]]
-
+        return _get_grays_wand(image, width, height, fill_color)
     elif PIL is not None and isinstance(image, PIL.Image.Image):
-        gray_image = image.convert('L')
-        small_image = gray_image.resize((width, height), _resample)
-        return list(small_image.getdata())
-
+        return _get_grays_pil(image, width, height, fill_color)
     else:
         raise ValueError('image must be a wand.image.Image or PIL.Image instance')
 
@@ -81,7 +93,8 @@ def dhash_row_col(image, size=8):
     hashes as (row_hash, col_hash) where each value is a size*size bit
     integer.
 
-    >>> row, col = dhash_row_col([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], size=4)
+    >>> image = [0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9]
+    >>> row, col = dhash_row_col(image, 4)
     >>> format(row, '016b')
     '0100101111010001'
     >>> format(col, '016b')
@@ -109,7 +122,8 @@ def dhash_int(image, size=8):
     hashes combined as a single 2*size*size bit integer (row_hash in most
     significant bits, col_hash in least).
 
-    >>> dhash_int([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], size=4)
+    >>> image = [0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9]
+    >>> dhash_int(image, size=4)
     1272009721
     """
     row_hash, col_hash = dhash_row_col(image, size=size)
@@ -195,7 +209,8 @@ def format_matrix(hash_int, bits='01', size=8):
 def format_grays(grays, size=8):
     r"""Format grays list as matrix of gray values.
 
-    >>> out = format_grays([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], size=4)
+    >>> image = [0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9]
+    >>> out = format_grays(image, size=4)
     >>> print('\n'.join(line.strip() for line in out.splitlines()))
     0   0   1   1   1
     0   1   1   3   4
