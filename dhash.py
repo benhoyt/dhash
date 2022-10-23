@@ -71,37 +71,19 @@ def get_grays(image, width, height, fill_color='white'):
     [0, 0, 1, 1, 1, 0, 1, 1, 3, 4, 0, 1, 6, 6, 7, 7, 7, 7, 7, 9, 8, 7, 7, 8, 9]
     """
     if isinstance(image, (tuple, list)):
-        if len(image) == width * height:
-            return image
-
-        raise ValueError(
-            'image sequence length ({}) not equal to width*height ({})'.format(
-                len(image), width * height))
-
-    if wand is not None and isinstance(image, wand.image.Image):
-        return _get_grays_wand(image, width, height, fill_color)
-
-    if PIL is not None and isinstance(image, PIL.Image.Image):
-        return _get_grays_pil(image, width, height, fill_color)
+        if len(image) != width * height:
+            raise ValueError(
+                'image sequence length ({}) not equal to width*height ({})'.format(
+                    len(image), width * height))
+        return image
 
     if wand is None and PIL is None:
         raise ImportError('must have wand or Pillow/PIL installed to use dhash on images')
 
     if wand is not None and isinstance(image, wand.image.Image):
-        with image.clone() as small_image:
-            small_image.type = 'grayscale'
-            small_image.resize(width, height)
-            blob = small_image.make_blob(format='RGB')
-            if IS_PY3:
-                return list(blob[::3])
-            else:
-                return [ord(c) for c in blob[::3]]
-
+        return _get_grays_wand(image, width, height, fill_color)
     elif PIL is not None and isinstance(image, PIL.Image.Image):
-        gray_image = image.convert('L')
-        small_image = gray_image.resize((width, height), _resample)
-        return list(small_image.getdata())
-
+        return _get_grays_pil(image, width, height, fill_color)
     else:
         raise ValueError('image must be a wand.image.Image or PIL.Image instance')
 
