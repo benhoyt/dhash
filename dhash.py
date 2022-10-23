@@ -41,7 +41,7 @@ def _get_grays_pil(image, width, height, fill_color='white'):
         image = cleaned
 
     image = image.convert('L')
-    image = image.resize((width, height), PIL.Image.ANTIALIAS)
+    image = image.resize((width, height), _resample)
 
     return list(image.getdata())
 
@@ -111,7 +111,7 @@ def dhash_row_col(image, size=8):
     hashes as (row_hash, col_hash) where each value is a size*size bit
     integer.
 
-    >>> image = [ 0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7, 9,8,7,7,8,9 ]
+    >>> image = [0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9]
     >>> row, col = dhash_row_col(image, 4)
     >>> format(row, '016b')
     '0100101111010001'
@@ -140,7 +140,8 @@ def dhash_int(image, size=8):
     hashes combined as a single 2*size*size bit integer (row_hash in most
     significant bits, col_hash in least).
 
-    >>> dhash_int([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], size=4)
+    >>> image = [0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9]
+    >>> dhash_int(image, size=4)
     1272009721
     """
     row_hash, col_hash = dhash_row_col(image, size=size)
@@ -226,7 +227,8 @@ def format_matrix(hash_int, bits='01', size=8):
 def format_grays(grays, size=8):
     r"""Format grays list as matrix of gray values.
 
-    >>> out = format_grays([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], size=4)
+    >>> image = [0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9]
+    >>> out = format_grays(image, size=4)
     >>> print('\n'.join(line.strip() for line in out.splitlines()))
     0   0   1   1   1
     0   1   1   3   4
