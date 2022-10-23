@@ -19,17 +19,25 @@ def pil_to_wand(image, format='png'):
 
 
 class TestDHash(TestCase):
-    def test_get_grays(self):
+    def test_get_grays_pil(self):
         with PilImage.open(path.join(IMGDIR, 'dhash-test.jpg')) as image:
-            # get the first two rows
-            result = dhash.get_grays(image, 9, 9)[:18]
+            self._test_get_grays(image, delta=1)
+
+    def test_get_grays_wand(self):
+        image = WandImage(filename=path.join(IMGDIR, 'dhash-test.jpg'))
+        self._test_get_grays(image, delta=2)
+
+    def _test_get_grays(self, image, delta):
+        result = dhash.get_grays(image, 9, 9)[:18]
 
         expected = [
             93, 158, 210, 122, 93, 77, 74, 74, 77,
             95, 117, 122, 111, 92, 74, 81, 80, 77,
         ]  # fmt: skip
 
-        self.assertAlmostEqual(result, expected, delta=1)
+        self.assertEqual(len(result), len(expected))
+        for r, e in zip(result, expected):
+            self.assertAlmostEqual(r, e, delta=delta)
 
     def test_fill_transparency(self):
         "Ensure transparent colors in PIL Images are ignored in hashes"
