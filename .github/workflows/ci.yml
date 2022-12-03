@@ -40,7 +40,8 @@ jobs:
       - name: Run tests for Ubuntu Python 2
         if: ${{ matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7' }}
         run: |
-          python2 dhash.py
+          python2 -m doctest dhash.py
+          pytest --cov=dhash test.py
       - name: Run tests for other setup configurations
         if: ${{ !(matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7') }}
         run: |
