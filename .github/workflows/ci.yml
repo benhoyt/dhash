@@ -10,41 +10,41 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['2.7', '3.8', '3.9', '3.10']
+        os: [ubuntu-22.04, windows-latest, macos-latest]
+        python-version: ['2.7', '3.8', '3.9', '3.10', '3.11']
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up Python for Ubuntu Python 2
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '2.7' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7' }}
         run: |
           sudo apt-get install python2
           sudo apt-get install python-pip
       - name: Set up Python
-        if: ${{ !(matrix.os == 'ubuntu-latest' && matrix.python-version == '2.7') }}
+        if: ${{ !(matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7') }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install requirements for Ubuntu Python 2
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '2.7' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7' }}
         run: |
           pip2 install --upgrade pip
           pip2 install pytest pytest-cov Pillow Wand
       - name: Install requirements for other setup configurations
-        if: ${{ !(matrix.os == 'ubuntu-latest' && matrix.python-version == '2.7') }}
+        if: ${{ !(matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7') }}
         run: |
           python --version
           pip install --upgrade pip
           pip install pytest pytest-cov Pillow Wand
       - name: Run tests for Ubuntu Python 2
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '2.7' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7' }}
         run: |
           python2 --version
           python2 dhash.py
       - name: Run tests for other setup configurations
-        if: ${{ !(matrix.os == 'ubuntu-latest' && matrix.python-version == '2.7') }}
+        if: ${{ !(matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7') }}
         run: |
           python -m doctest dhash.py
           pytest --cov=dhash test.py
