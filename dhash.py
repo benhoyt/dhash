@@ -14,8 +14,8 @@ import sys
 
 # Allow library to be imported even if neither wand or PIL are installed
 try:
-    import wand.image
     import wand.color
+    import wand.image
 except ImportError:
     wand = None
 
@@ -69,6 +69,12 @@ def get_grays(image, width, height, fill_color='white'):
 
     >>> get_grays([0,0,1,1,1, 0,1,1,3,4, 0,1,6,6,7, 7,7,7,7,9, 8,7,7,8,9], 5, 5)
     [0, 0, 1, 1, 1, 0, 1, 1, 3, 4, 0, 1, 6, 6, 7, 7, 7, 7, 7, 9, 8, 7, 7, 8, 9]
+
+    >>> import os
+    >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
+    >>> with wand.image.Image(filename=test_filename) as image:
+    ...     get_grays(image, 9, 9)[:18]
+    [95, 157, 211, 123, 94, 79, 75, 75, 78, 96, 116, 122, 113, 93, 75, 82, 81, 79]
     """
     if isinstance(image, (tuple, list)):
         if len(image) != width * height:
@@ -99,6 +105,12 @@ def dhash_row_col(image, size=8):
     '0100101111010001'
     >>> format(col, '016b')
     '0101001111111001'
+    >>> import os
+    >>> test_filename = os.path.join(os.path.dirname(__file__), 'dhash-test.jpg')
+    >>> with wand.image.Image(filename=test_filename) as image:
+    ...     row, col = dhash_row_col(image)
+    >>> (row, col) == (13962536140006260880, 9510476289765573406)
+    True
     """
     width = size + 1
     grays = get_grays(image, width, width)
