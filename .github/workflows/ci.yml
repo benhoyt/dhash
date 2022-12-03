@@ -35,13 +35,11 @@ jobs:
       - name: Install requirements for other setup configurations
         if: ${{ !(matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7') }}
         run: |
-          python --version
           pip install --upgrade pip
           pip install pytest pytest-cov Pillow Wand
       - name: Run tests for Ubuntu Python 2
         if: ${{ matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7' }}
         run: |
-          python2 --version
           python2 dhash.py
       - name: Run tests for other setup configurations
         if: ${{ !(matrix.os == 'ubuntu-22.04' && matrix.python-version == '2.7') }}
