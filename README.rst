@@ -58,9 +58,9 @@ To produce a dhash value using wand:
 .. code:: python
 
     import dhash
-    from wand.image import Image as WandImage
+    import wand.image
 
-    with WandImage(filename='dhash-test.jpg') as image:
+    with wand.image.Image(filename='dhash-test.jpg') as image:
         row, col = dhash.dhash_row_col(image)
     print(dhash.format_hex(row, col))
 
