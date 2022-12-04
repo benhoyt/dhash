@@ -14,8 +14,8 @@ import sys
 
 # Allow library to be imported even if neither wand or PIL are installed
 try:
-    import wand.image
     import wand.color
+    import wand.image
 except ImportError:
     wand = None
 

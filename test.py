@@ -1,30 +1,30 @@
-from unittest import TestCase
 from io import BytesIO
 from os import path
+from unittest import TestCase
 
-from PIL import Image as PilImage, ImageDraw as PilDraw
-from wand.image import Image as WandImage
+import wand.image
+from PIL import Image as PilImage
+from PIL import ImageDraw as PilDraw
 
 import dhash
-
 
 IMGDIR = path.dirname(__file__)
 
 
-def pil_to_wand(image, format='png'):
+def pil_to_wand(image, format="png"):
     with BytesIO() as fd:
         image.save(fd, format=format)
         fd.seek(0)
-        return WandImage(file=fd)
+        return wand.image.Image(file=fd)
 
 
 class TestDHash(TestCase):
     def test_get_grays_pil(self):
-        with PilImage.open(path.join(IMGDIR, 'dhash-test.jpg')) as image:
+        with PilImage.open(path.join(IMGDIR, "dhash-test.jpg")) as image:
             self._test_get_grays(image, delta=1)
 
     def test_get_grays_wand(self):
-        image = WandImage(filename=path.join(IMGDIR, 'dhash-test.jpg'))
+        image = wand.image.Image(filename=path.join(IMGDIR, "dhash-test.jpg"))
         self._test_get_grays(image, delta=2)
 
     def _test_get_grays(self, image, delta):
@@ -42,8 +42,8 @@ class TestDHash(TestCase):
     def test_fill_transparency(self):
         "Ensure transparent colors in PIL Images are ignored in hashes"
 
-        # greyscale image, completely white and also completely transparent
-        im1 = PilImage.new('LA', (100, 100), (0xff, 0))
+        # grayscale image, completely white and also completely transparent
+        im1 = PilImage.new("LA", (100, 100), (0xFF, 0))
 
         im2 = im1.copy()
         # replace most of it with "transparent black"
@@ -57,6 +57,7 @@ class TestDHash(TestCase):
         self.assertAlmostEqual(dhash.dhash_row_col(pm1), dhash.dhash_row_col(pm2), delta=1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import unittest
+
     unittest.main()

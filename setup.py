@@ -3,8 +3,8 @@
 import os
 import re
 import sys
-from setuptools import setup
 
+from setuptools import setup
 
 # Read files as byte strings on Python 2.x, unicode strings on 3.x
 if sys.version_info < (3, 0):
@@ -53,6 +53,11 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Multimedia :: Graphics',
     ]
 )

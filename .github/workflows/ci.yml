@@ -6,25 +6,72 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
+  test_ubuntu_python2:
+    runs-on: ubuntu-22.04
     strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['2.7', '3.8', '3.9', '3.10']
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set up Python
+        run: |
+          sudo apt-get install python2 python-pip
+
+      - name: Install requirements
+        run: |
+          pip2 install --upgrade pip
+          pip2 install pytest pytest-cov Pillow Wand
+
+      - name: Run tests
+        run: |
+          python2 -m doctest dhash.py
+          python2 -m pytest --cov=dhash test.py
+
+  test_ubuntu_python3:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install requirements
         run: |
-          python --version
           pip install --upgrade pip
           pip install pytest pytest-cov Pillow Wand
+
       - name: Run tests
         run: |
           python -m doctest dhash.py
-          pytest --cov=dhash test.py
+          python -m pytest --cov=dhash test.py
+
+  test_windows_and_macos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+        python-version: ['2.7', '3.8', '3.9', '3.10', '3.11']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip
+          pip install pytest pytest-cov Pillow Wand
+
+      - name: Run tests
+        run: |
+          python -m doctest dhash.py
+          python -m pytest --cov=dhash test.py
