@@ -1,9 +1,10 @@
-from unittest import TestCase
 from io import BytesIO
 from os import path
-from PIL import Image as PilImage, ImageDraw as PilDraw
+from unittest import TestCase
 
-from wand.image import Image as WandImage
+import wand.image
+from PIL import Image as PilImage
+from PIL import ImageDraw as PilDraw
 
 import dhash
 
@@ -14,7 +15,7 @@ def pil_to_wand(image, format="png"):
     with BytesIO() as fd:
         image.save(fd, format=format)
         fd.seek(0)
-        return WandImage(file=fd)
+        return wand.image.Image(file=fd)
 
 
 class TestDHash(TestCase):
@@ -23,7 +24,7 @@ class TestDHash(TestCase):
             self._test_get_grays(image, delta=1)
 
     def test_get_grays_wand(self):
-        image = WandImage(filename=path.join(IMGDIR, "dhash-test.jpg"))
+        image = wand.image.Image(filename=path.join(IMGDIR, "dhash-test.jpg"))
         self._test_get_grays(image, delta=2)
 
     def _test_get_grays(self, image, delta):

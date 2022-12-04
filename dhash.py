@@ -15,7 +15,7 @@ import sys
 # Allow library to be imported even if neither wand or PIL are installed
 try:
     import wand.color
-    from wand.image import Image as WandImage
+    import wand.image
 except ImportError:
     wand = None
 
@@ -80,7 +80,7 @@ def get_grays(image, width, height, fill_color='white'):
     if wand is None and PIL is None:
         raise ImportError('must have wand or Pillow/PIL installed to use dhash on images')
 
-    if wand is not None and isinstance(image, WandImage):
+    if wand is not None and isinstance(image, wand.image.Image):
         return _get_grays_wand(image, width, height, fill_color)
     elif PIL is not None and isinstance(image, PIL.Image.Image):
         return _get_grays_pil(image, width, height, fill_color)
@@ -260,7 +260,7 @@ if __name__ == '__main__':
 
     def load_image(filename):
         if wand is not None:
-            return WandImage(filename=filename)
+            return wand.image.Image(filename=filename)
         elif PIL is not None:
             return PIL.Image.open(filename)
         else:
