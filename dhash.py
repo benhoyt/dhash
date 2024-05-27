@@ -131,7 +131,7 @@ def dhash_int(image, size=8):
 
 
 def get_num_bits_different(hash1, hash2):
-    """Calculate number of bits different between two hashes.
+    """Calculate number of bits different between two integer hashes.
 
     >>> get_num_bits_different(0x4bd1, 0x4bd1)
     0
